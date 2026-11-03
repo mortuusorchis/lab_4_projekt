@@ -2,26 +2,31 @@
 #include <cmath>
 using namespace std;
 
-void showPopulation(); // prototyp funkcji showPopulation
+void showPopulation(int day, int susceptible, int infected, int recovered); // prototyp funkcji showPopulation
 void simulateDay(); // prototyp funkcji simulateDay
+bool checkPopulation(int susceptible, int infected, int recovered); // prototyp funkcji checkPopulation
+
+// zmienne globalne stanu populacji
 int susceptible = 80;
 int infected = 10;
 int recovered = 10;
 int day = 0;
 
+// parametry modelu
 double infectionRate = 0.20; 
-double recoveryRate = 0.10; // parametry modelu
+double recoveryRate = 0.10; 
 
+	
 int main() {
-	
-	
+
+
 	int choice;
 	bool running = true;
 
-	
-	while (running) {
 
-		showPopulation();
+	while (running) {
+		
+		showPopulation(day, susceptible, infected, recovered); // wyświetlanie populacji przed menu (krok 3)
 
 		cout << "=== Epidemic Simulator ===" << endl;
 		cout << "1. Simulate next day " << endl;
@@ -32,33 +37,36 @@ int main() {
 		cout << endl;
 
 		switch (choice) {
-		case 1: { // stymulacja tylko dla jednego kolejnego dnia
-			day++;
-
+		case 1: { 
 			
+			simulateDay();
 
-			int NewInfected = infected * infectionRate;
-			int NewRecovered = recovered * recoveryRate;
-
-			if (NewInfected > susceptible) { // zabezpieczenie przed ujemną liczbą podatnych na zakażenie, która wystąpiłaby gdy zakażeni > podatnych
-				NewInfected = susceptible;
+			if (!checkPopulation(susceptible, infected, recovered)) {
+				running = false;
+				
 			}
-
-			susceptible = susceptible - NewInfected;
-			infected = infected + NewInfected;
-			recovered = recovered + static_cast<int>(NewRecovered);
-
-			cout << "*** Simulated day " << day << "***" << endl;
 			break;
 		}
 		case 2: { // zmiana parametrów modelu
+			double NewInfectionRate, NewRecoveryRate;
 			cout << "Change the infection rate, choose from the rage from 0.00 to 1.00:  ";
-			cin >> infectionRate;
+			cin >> NewInfectionRate;
+
 			cout << "Change the recovery rate, chose from the rage from 0.00 to 1.00: ";
-			cin >> recoveryRate;
-			cout << "Your parameters have been successfully updated" << endl;
+			cin >> NewRecoveryRate;
+
+			if (NewInfectionRate >= 0.00 && NewInfectionRate <= 1.00 && NewRecoveryRate >= 0.00 && NewRecoveryRate <= 1.00) {
+				infectionRate = NewInfectionRate;
+				recoveryRate = NewRecoveryRate;
+				cout << "Your parameters have been successfully updated" << endl;
+			}
+			else {
+				cout << "Error: Invalid values! Paremeters remain unchanged. " << endl;
+			}
+			cout << endl;
 			break;
 		}
+
 		case 3: { // kontrolowane zakończenie programu
 			cout << "Exiting simutator. Bye :)" << endl;
 
@@ -66,19 +74,16 @@ int main() {
 			break;
 		}
 		default: {
-			cout << "error: invalid command. please try again.";
+			cout << "Error: invalid command. please try again." << endl;
 			break;
 		}
-		}
-	
-	}
-	
+    }
+}
+return 0;
+}
 
-		return 0;
-
-  }
  
-void showPopulation() { // definicja funkcji showPopulation
+void showPopulation(int day, int susceptible, int infected, int recovered) { // definicja funkcji showPopulation
 
 	cout << "Day: " << day << endl;
 	cout << "Susceptible: " << susceptible << endl;
@@ -89,11 +94,11 @@ void showPopulation() { // definicja funkcji showPopulation
 }
 
 void simulateDay() {
-
+    day++;
 	int InfectedAtStart = infected;
 
-	int NewInfected =  floor(InfectedAtStart *  infectionRate);
-	int NewRecovered = floor(InfectedAtStart * recoveryRate);
+	int NewInfected = static_cast<int>(floor(InfectedAtStart *  infectionRate));
+	int NewRecovered = static_cast<int>(floor(InfectedAtStart * recoveryRate));
 
 	if (NewInfected > susceptible) {
 		NewInfected = susceptible;
@@ -105,7 +110,17 @@ void simulateDay() {
 	infected = infected + NewInfected - NewRecovered;
 	recovered = recovered + NewRecovered;
 
-	day++;
-
 	cout << "*** Simulated day " << day << " ***" << endl;
 }
+
+bool checkPopulation(int susceptible, int infected, int recovered) {
+	if (susceptible >= 0 && infected >= 0 && recovered >= 0 && (susceptible + infected + recovered == 100)) {
+		return true;
+	}
+	else {
+		cout << "Error. Something is wrong with your population. " << endl;
+		return false;
+	}
+} 
+
+// dlaczego nadal błąd kompilacji ????
