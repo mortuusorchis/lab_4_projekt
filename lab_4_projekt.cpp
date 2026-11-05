@@ -32,7 +32,7 @@ int main() {
 		cout << "1. Simulate next day " << endl;
 		cout << "2. Change model parameters " << endl;
 		cout << "3. Exit " << endl;
-		cout << "Yor choice: ";
+		cout << "Your choice: ";
 		cin >> choice;
 		cout << endl;
 
@@ -40,6 +40,8 @@ int main() {
 		case 1: { 
 			
 			simulateDay();
+			
+			
 
 			if (!checkPopulation(susceptible, infected, recovered)) {
 				running = false;
@@ -94,7 +96,7 @@ void showPopulation(int day, int susceptible, int infected, int recovered) { // 
 }
 
 void simulateDay() {
-    day++;
+	
 	int InfectedAtStart = infected;
 
 	int NewInfected = static_cast<int>(floor(InfectedAtStart *  infectionRate));
@@ -110,6 +112,7 @@ void simulateDay() {
 	infected = infected + NewInfected - NewRecovered;
 	recovered = recovered + NewRecovered;
 
+	day++;
 	cout << "*** Simulated day " << day << " ***" << endl;
 }
 
@@ -123,4 +126,3 @@ bool checkPopulation(int susceptible, int infected, int recovered) {
 	}
 } 
 
-// dlaczego nadal błąd kompilacji ????
