@@ -5,6 +5,7 @@ using namespace std;
 void showPopulation(int day, int susceptible, int infected, int recovered); // prototyp funkcji showPopulation
 void simulateDay(); // prototyp funkcji simulateDay
 bool checkPopulation(int susceptible, int infected, int recovered); // prototyp funkcji checkPopulation
+void showHistory();
 
 int populationHistory[101][3]; // dni od 0 - 100; 3 rodzaje ludzi: podatni, chorzy, zdrowi
 int dailyNewInfections[100] = {};
@@ -24,9 +25,9 @@ double recoveryRate = 0.10;
 	
 int main() {
 
-	populationHistory[0][0] = 80;
-	populationHistory[0][1] = 10;
-	populationHistory[0][2] = 10;
+	populationHistory[0][0] = susceptible;
+	populationHistory[0][1] = infected;
+	populationHistory[0][2] = recovered;
 
 	int choice;
 	bool running = true;
@@ -40,6 +41,7 @@ int main() {
 		cout << "1. Simulate next day " << endl;
 		cout << "2. Change model parameters " << endl;
 		cout << "3. Exit " << endl;
+		cout << "4. Show simulation history " << endl;
 		cout << "Your choice: ";
 		cin >> choice;
 		cout << endl;
@@ -55,10 +57,16 @@ int main() {
 					running = false;
 				}
 				else {
-					cout << "You have reached the maximum number of days" << endl;
+					populationHistory[day][0] = susceptible;
+					populationHistory[day][1] = infected;
+					populationHistory[day][2] = recovered;
 				}
-				break;
 			}
+			else {
+				cout << "You have reached the maximum number of days" << endl;
+			
+			}	
+		break;
 		}
 		case 2: { // zmiana parametrów modelu
 			double NewInfectionRate, NewRecoveryRate;
@@ -86,6 +94,12 @@ int main() {
 			running = false;
 			break;
 		}
+
+		case 4: {
+			showHistory();
+		break;
+		}
+
 		default: {
 			cout << "Error: invalid command. please try again." << endl;
 			break;
@@ -113,6 +127,12 @@ void simulateDay() {
 	int NewInfected = static_cast<int>(floor(InfectedAtStart *  infectionRate));
 	int NewRecovered = static_cast<int>(floor(InfectedAtStart * recoveryRate));
 
+	////////////////////
+	if (infected > 0 && NewRecovered == 0) { // pętla zabezpiecza przed tym, że 0 osób wyzdrowiało kiedy infected> 0 
+		                                     // bez tej pętli program czesto daje 0 osób, które zdrowieją przed osiągnęciem 100 dni
+		NewRecovered = 1;     
+	}
+	//////////////////// // kod zapisany pomiedzy ////... i ////... nie jest konieczny do prawidłowego działania programu
 	if (NewInfected > susceptible) {
 		NewInfected = susceptible;
 	}
@@ -141,3 +161,22 @@ bool checkPopulation(int susceptible, int infected, int recovered) {
 	}
 } 
 
+void showHistory() {
+	for (int i = 0; i <= day; i++) {
+		
+		cout << "Day " << i << endl;
+		cout << "Susceptible: " << populationHistory[i][0] << endl;
+		cout << "Infected: " << populationHistory[i][1] << endl;
+		cout << "Recovered: " << populationHistory[i][2] << endl;
+
+		if (i == 0) {
+			cout << "New infections: - " << endl;
+			cout << "New recoveries: - " << endl;
+		}
+		else {
+			cout << "New infections: " << dailyNewInfections[i - 1] << endl;
+			cout << "New recoveries: " << dailyRecoveries[i - 1] << endl;
+		}
+		cout << endl;
+	}
+}
