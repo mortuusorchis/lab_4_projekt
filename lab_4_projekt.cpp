@@ -6,6 +6,11 @@ void showPopulation(int day, int susceptible, int infected, int recovered); // p
 void simulateDay(); // prototyp funkcji simulateDay
 bool checkPopulation(int susceptible, int infected, int recovered); // prototyp funkcji checkPopulation
 
+int populationHistory[101][3]; // dni od 0 - 100; 3 rodzaje ludzi: podatni, chorzy, zdrowi
+int dailyNewInfections[100] = {};
+int dailyRecoveries[100] = {};
+
+
 // zmienne globalne stanu populacji
 int susceptible = 80;
 int infected = 10;
@@ -19,6 +24,9 @@ double recoveryRate = 0.10;
 	
 int main() {
 
+	populationHistory[0][0] = 80;
+	populationHistory[0][1] = 10;
+	populationHistory[0][2] = 10;
 
 	int choice;
 	bool running = true;
@@ -38,16 +46,19 @@ int main() {
 
 		switch (choice) {
 		case 1: { 
-			
-			simulateDay();
-			
-			
 
-			if (!checkPopulation(susceptible, infected, recovered)) {
-				running = false;
-				
+			if (day < 100) {
+
+				simulateDay();
+
+				if (!checkPopulation(susceptible, infected, recovered)) {
+					running = false;
+				}
+				else {
+					cout << "You have reached the maximum number of days" << endl;
+				}
+				break;
 			}
-			break;
 		}
 		case 2: { // zmiana parametrów modelu
 			double NewInfectionRate, NewRecoveryRate;
@@ -113,6 +124,10 @@ void simulateDay() {
 	recovered = recovered + NewRecovered;
 
 	day++;
+
+	dailyNewInfections[day - 1] = NewInfected;
+	dailyRecoveries[day - 1] = NewRecovered;
+
 	cout << "*** Simulated day " << day << " ***" << endl;
 }
 
