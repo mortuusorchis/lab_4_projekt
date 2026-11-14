@@ -128,8 +128,8 @@ void simulateDay() {
 	int NewRecovered = static_cast<int>(floor(InfectedAtStart * recoveryRate));
 
 	////////////////////
-	if (infected > 0 && NewRecovered == 0) { // pętla zabezpiecza przed tym, że 0 osób wyzdrowiało kiedy infected> 0 
-		                                     // bez tej pętli program czesto daje 0 osób, które zdrowieją przed osiągnęciem 100 dni
+	if (infected > 0 && NewRecovered == 0) { 
+		                                    
 		NewRecovered = 1;     
 	}
 	//////////////////// // kod zapisany pomiedzy ////... i ////... nie jest konieczny do prawidłowego działania programu
